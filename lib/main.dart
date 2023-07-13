@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/screens/city_screen.dart';
 
 import 'screens/loading_screen.dart';
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(
         primaryColor: Color(0xff131410),
       ),
-      home: LoadingScreen(),
+      home: CityScreen(),
       // home: const LocationScreen(),
     );
   }

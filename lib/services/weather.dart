@@ -23,6 +23,18 @@ class WeatherModel {
     name = weatherInfo['name'];
   }
 
+  Future<void> getCityWeather(String city) async {
+    Map<String, dynamic> weatherInfo = await NetworkHelper(
+      url: 'https://api.openweathermap.org/data/2.5/weather?'
+          'q=$city'
+          '&appid=$kApiKey&units=metric',
+    ).getData();
+
+    temp = weatherInfo['main']['temp'];
+    weatherId = weatherInfo['weather'][0]['id'];
+    name = weatherInfo['name'];
+  }
+
   String getWeatherIcon() {
     if (weatherId < 300) {
       return '🌩';

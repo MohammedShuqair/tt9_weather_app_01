@@ -7,10 +7,11 @@ import 'package:weather_app/services/weather.dart';
 
 import '../services/location.dart';
 import '../utilities/constants.dart';
+import 'city_screen.dart';
 
 class LocationScreen extends StatefulWidget {
-  final WeatherModel weatherData;
-  const LocationScreen({super.key, required this.weatherData});
+  WeatherModel weatherData;
+  LocationScreen({super.key, required this.weatherData});
 
   @override
   LocationScreenState createState() => LocationScreenState();
@@ -21,12 +22,24 @@ class LocationScreenState extends State<LocationScreen> {
   late String cityName;
   late String icon;
   late String description;
-  @override
-  void initState() {
+  late WeatherModel model;
+
+  Future<WeatherModel> getCurrentLocationWeather() async {
+    WeatherModel weatherInfo = WeatherModel();
+    await weatherInfo.getCurrentLocationWeather();
+    return weatherInfo;
+  }
+
+  setData() {
     temp = widget.weatherData.temp.toInt();
     cityName = widget.weatherData.name;
     icon = widget.weatherData.getWeatherIcon();
     description = widget.weatherData.getMessage();
+  }
+
+  @override
+  void initState() {
+    setData();
     super.initState();
   }
 
@@ -69,7 +82,12 @@ class LocationScreenState extends State<LocationScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        widget.weatherData = await getCurrentLocationWeather();
+                        setState(() {
+                          setData();
+                        });
+                      },
                       child: const Icon(
                         Icons.near_me,
                         size: 50.0,
@@ -77,7 +95,10 @@ class LocationScreenState extends State<LocationScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => CityScreen()));
+                      },
                       child: const Icon(
                         Icons.location_city,
                         size: 50.0,
