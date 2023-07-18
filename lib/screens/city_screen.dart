@@ -33,7 +33,7 @@ class CityScreenState extends State<CityScreen> {
     result.clear();
     if (city != null && city!.isNotEmpty) {
       for (int i = 0; i < cities.length; i++) {
-        if (cities[i].name.contains(city!)) {
+        if (cities[i].name.toLowerCase().contains(city!.toLowerCase())) {
           setState(() {
             result.add(cities[i]);
           });
@@ -109,12 +109,11 @@ class CityScreenState extends State<CityScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsetsDirectional.only(start: 20, top: 20),
+                  const Padding(
+                    padding: EdgeInsetsDirectional.only(start: 20, top: 20),
                     child: Text(
                       "Discover\nWeather in ",
                       style: TextStyle(
@@ -138,7 +137,7 @@ class CityScreenState extends State<CityScreen> {
                           return "Please Enter City Name";
                         }
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         errorStyle: TextStyle(color: Colors.yellow),
                         filled: true,
                         fillColor: Colors.white,
@@ -150,15 +149,15 @@ class CityScreenState extends State<CityScreen> {
                   // ),
                   ListView.separated(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) => Container(
-                            margin: EdgeInsets.symmetric(horizontal: 18),
+                            margin: const EdgeInsets.symmetric(horizontal: 18),
                             decoration: BoxDecoration(
                                 color: Colors.yellow,
                                 borderRadius: BorderRadius.circular(30)),
                             child: ListTile(
                               trailing: IconButton(
-                                icon: Icon(Icons.search),
+                                icon: const Icon(Icons.search),
                                 onPressed: () async {
                                   if (_key.currentState!.validate() &&
                                       city != null) {
@@ -178,10 +177,31 @@ class CityScreenState extends State<CityScreen> {
                               title: Text(result[index].name),
                             ),
                           ),
-                      separatorBuilder: (context, index) => SizedBox(
+                      separatorBuilder: (context, index) => const SizedBox(
                             height: 8,
                           ),
                       itemCount: result.length > 20 ? 20 : result.length),
+                  if (city != null) ...[
+                    SizedBox(
+                      height: 28,
+                    ),
+                    TextButton(
+                        onPressed: () async {
+                          WeatherModel model = await getCityWeather(city!);
+                          if (mounted) {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        LocationScreen(weatherData: model)),
+                                (route) => false);
+                          }
+                        },
+                        child: Text(
+                          "Search Any Way",
+                          style: TextStyle(color: Colors.yellow, fontSize: 24),
+                        ))
+                  ]
                 ],
               ),
             ),

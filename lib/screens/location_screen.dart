@@ -39,8 +39,26 @@ class LocationScreenState extends State<LocationScreen> {
 
   @override
   void initState() {
+    getImage();
     setData();
     super.initState();
+  }
+
+  bool isLoaded = false;
+  ImageProvider assetImage =
+      AssetImage('assets/images/location_background.jpg');
+  ImageProvider networkImage =
+      NetworkImage('https://source.unsplash.com/random/?nature,day');
+
+  void getImage() {
+    networkImage
+        .resolve(ImageConfiguration())
+        .addListener(ImageStreamListener((image, synchronousCall) {
+      setState(() {
+        print("change Now");
+        isLoaded = true;
+      });
+    }));
   }
 
   @override
@@ -51,9 +69,7 @@ class LocationScreenState extends State<LocationScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                // image: AssetImage('images/location_background.jpg'),
-                image: const NetworkImage(
-                    'https://source.unsplash.com/random/?nature,day'),
+                image: isLoaded ? networkImage : assetImage,
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                     Colors.white.withOpacity(0.8), BlendMode.dstATop),
@@ -84,6 +100,7 @@ class LocationScreenState extends State<LocationScreen> {
                     TextButton(
                       onPressed: () async {
                         widget.weatherData = await getCurrentLocationWeather();
+                        print(widget.weatherData.name);
                         setState(() {
                           setData();
                         });
@@ -96,8 +113,19 @@ class LocationScreenState extends State<LocationScreen> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => CityScreen()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CityScreen(),
+                          ),
+                        ).then((value) => () {
+                              setState(() {
+                                isLoaded = false;
+                              });
+                              networkImage = NetworkImage(
+                                  'https://source.unsplash.com/random/?nature,day');
+                              getImage();
+                            });
                       },
                       child: const Icon(
                         Icons.location_city,
@@ -177,7 +205,11 @@ class LocationScreenState extends State<LocationScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
                     ),
-                    child: Text('fffffmmmmmmm'),
+                    child: Text(
+                      widget.weatherData.name,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
                   ),
                 ),
               ),
